@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Oikonomos Web",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "cd /Users/kenoshaughnessy/Desktop/oikonomos-web && npm run dev"],
+      "port": 3000
+    }
+  ]
+}
