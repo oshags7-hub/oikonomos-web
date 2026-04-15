@@ -89,17 +89,20 @@ export default function MealsPage() {
         body: JSON.stringify({ prompt: recipePrompt }),
       })
       const recipe = await res.json()
-      await supabase.from('recipes').insert({
+      if (recipe.error) throw new Error(recipe.error)
+      if (!recipe.title) throw new Error('No recipe returned')
+      const { error: dbError } = await supabase.from('recipes').insert({
         title: recipe.title,
-        ingredients: recipe.ingredients,
-        instructions: recipe.instructions,
-        prep_time: recipe.prep_time,
+        ingredients: recipe.ingredients ?? '',
+        instructions: recipe.instructions ?? '',
+        prep_time: recipe.prep_time ?? '',
         user_profile: 'mom',
       })
+      if (dbError) throw new Error(dbError.message)
       setRecipePrompt('')
       loadRecipes()
-    } catch {
-      alert('Recipe generation failed')
+    } catch (e: unknown) {
+      alert('Recipe generation failed: ' + (e instanceof Error ? e.message : String(e)))
     }
     setRecipeLoading(false)
   }

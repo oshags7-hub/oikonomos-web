@@ -36,13 +36,23 @@ export default function HomePage() {
   async function addTask() {
     if (!form.title.trim()) return
     setSaving(true)
-    await supabase.from('home_tasks').insert({
+    const { error } = await supabase.from('home_tasks').insert({
       title: form.title,
       icon: form.icon,
       notes: form.notes,
       status: 'upcoming',
       user_profile: 'mom',
     })
+    if (error) {
+      // icon column may not exist — retry without it
+      const { error: e2 } = await supabase.from('home_tasks').insert({
+        title: form.title,
+        notes: form.notes,
+        status: 'upcoming',
+        user_profile: 'mom',
+      })
+      if (e2) { alert('Save failed: ' + e2.message); setSaving(false); return }
+    }
     setForm({ title: '', icon: '🔧', notes: '' })
     setShowForm(false)
     setSaving(false)
