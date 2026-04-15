@@ -91,11 +91,13 @@ export default function MealsPage() {
       const recipe = await res.json()
       if (recipe.error) throw new Error(recipe.error)
       if (!recipe.title) throw new Error('No recipe returned')
+      // Strip prep_time to just a string (some tables store it as integer)
+      const prepTime = String(recipe.prep_time ?? '').replace(/[^0-9]/g, '') || null
       const { error: dbError } = await supabase.from('recipes').insert({
         title: recipe.title,
         ingredients: recipe.ingredients ?? '',
         instructions: recipe.instructions ?? '',
-        prep_time: recipe.prep_time ?? '',
+        prep_time: prepTime,
         user_profile: 'mom',
       })
       if (dbError) throw new Error(dbError.message)
